@@ -19,6 +19,7 @@ package org.springframework.transaction.interceptor;
 import java.io.Serializable;
 
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DelegatingTransactionDefinition;
 
 /**
@@ -54,8 +55,8 @@ public abstract class DelegatingTransactionAttribute extends DelegatingTransacti
 	}
 
 	@Override
-	public boolean rollbackOn(Throwable ex) {
-		return this.targetAttribute.rollbackOn(ex);
+	public boolean rollbackOn(@Nullable TransactionStatus txs, Throwable ex) {
+		return this.targetAttribute.rollbackOn(txs, ex);
 	}
 
 }

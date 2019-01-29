@@ -316,7 +316,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 						return invocation.proceedWithInvocation();
 					}
 					catch (Throwable ex) {
-						if (txAttr.rollbackOn(ex)) {
+						if (txAttr.rollbackOn(txInfo.getTransactionStatus(), ex)) {
 							// A RuntimeException: will lead to a rollback.
 							if (ex instanceof RuntimeException) {
 								throw (RuntimeException) ex;
@@ -546,7 +546,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() +
 						"] after exception: " + ex);
 			}
-			if (txInfo.transactionAttribute != null && txInfo.transactionAttribute.rollbackOn(ex)) {
+			if (txInfo.transactionAttribute != null && txInfo.transactionAttribute.rollbackOn(txInfo.getTransactionStatus(), ex)) {
 				try {
 					txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());
 				}

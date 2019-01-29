@@ -91,10 +91,10 @@ public class TxNamespaceHandlerTests {
 		TransactionInterceptor txInterceptor = (TransactionInterceptor) context.getBean("txRollbackAdvice");
 		TransactionAttributeSource txAttrSource = txInterceptor.getTransactionAttributeSource();
 		TransactionAttribute txAttr = txAttrSource.getTransactionAttribute(getAgeMethod,ITestBean.class);
-		assertTrue("should be configured to rollback on Exception",txAttr.rollbackOn(new Exception()));
+		assertTrue("should be configured to rollback on Exception",txAttr.rollbackOn(null, new Exception()));
 
 		txAttr = txAttrSource.getTransactionAttribute(setAgeMethod, ITestBean.class);
-		assertFalse("should not rollback on RuntimeException",txAttr.rollbackOn(new RuntimeException()));
+		assertFalse("should not rollback on RuntimeException",txAttr.rollbackOn(null, new RuntimeException()));
 	}
 
 	private ITestBean getTestBean() {

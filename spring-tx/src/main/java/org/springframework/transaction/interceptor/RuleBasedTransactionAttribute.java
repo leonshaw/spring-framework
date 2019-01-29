@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.TransactionStatus;
 
 /**
  * TransactionAttribute implementation that works out whether a given exception
@@ -55,6 +56,8 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 	@Nullable
 	private List<RollbackRuleAttribute> rollbackRules;
 
+	@Nullable
+	private List<RollbackRuleAttribute> propagateRollbackRules;
 
 	/**
 	 * Create a new RuleBasedTransactionAttribute, with default settings.
@@ -121,17 +124,46 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		return this.rollbackRules;
 	}
 
+	public void setPropagateRollbackRules(List<RollbackRuleAttribute> propagateRollbackRules) {
+		this.propagateRollbackRules = propagateRollbackRules;
+	}
+
+	public List<RollbackRuleAttribute> getPropagateRollbackRules() {
+		if (this.propagateRollbackRules == null) {
+			this.propagateRollbackRules = new LinkedList<>();
+		}
+		return this.propagateRollbackRules;
+	}
+
 
 	/**
 	 * Winning rule is the shallowest rule (that is, the closest in the
 	 * inheritance hierarchy to the exception). If no rule applies (-1),
 	 * return false.
-	 * @see TransactionAttribute#rollbackOn(java.lang.Throwable)
+	 * @see TransactionAttribute#rollbackOn(TransactionStatus, java.lang.Throwable)
 	 */
 	@Override
-	public boolean rollbackOn(Throwable ex) {
+	public boolean rollbackOn(@Nullable TransactionStatus txs, Throwable ex) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Applying rules to determine whether transaction should rollback on " + ex);
+		}
+
+		if (txs != null && !txs.isNewTransaction() && this.propagateRollbackRules != null) {
+			RollbackRuleAttribute winner = null;
+			int deepest = Integer.MAX_VALUE;
+			for (RollbackRuleAttribute rule : this.propagateRollbackRules) {
+				int depth = rule.getDepth(ex);
+				if (depth >= 0 && depth < deepest) {
+					deepest = depth;
+					winner = rule;
+				}
+			}
+			if (winner instanceof NoRollbackRuleAttribute) {
+				if (logger.isTraceEnabled()) {
+					logger.trace("Suppressing rollback for propagated tx, rule is: " + winner);
+				}
+			    return false;
+			}
 		}
 
 		RollbackRuleAttribute winner = null;
@@ -154,7 +186,7 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		// User superclass behavior (rollback on unchecked) if no rule matches.
 		if (winner == null) {
 			logger.trace("No relevant rollback rule found: applying default rules");
-			return super.rollbackOn(ex);
+			return super.rollbackOn(txs, ex);
 		}
 
 		return !(winner instanceof NoRollbackRuleAttribute);

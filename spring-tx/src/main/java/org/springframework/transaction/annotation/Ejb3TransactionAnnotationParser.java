@@ -22,6 +22,7 @@ import javax.ejb.ApplicationException;
 import javax.ejb.TransactionAttributeType;
 
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttribute;
 
@@ -74,9 +75,9 @@ public class Ejb3TransactionAnnotationParser implements TransactionAnnotationPar
 		}
 
 		@Override
-		public boolean rollbackOn(Throwable ex) {
+		public boolean rollbackOn(@Nullable TransactionStatus txs, Throwable ex) {
 			ApplicationException ann = ex.getClass().getAnnotation(ApplicationException.class);
-			return (ann != null ? ann.rollback() : super.rollbackOn(ex));
+			return (ann != null ? ann.rollback() : super.rollbackOn(txs, ex));
 		}
 	}
 
