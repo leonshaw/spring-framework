@@ -96,11 +96,11 @@ public class TransactionAttributeEditorTests {
 		assertEquals(TransactionDefinition.ISOLATION_REPEATABLE_READ, ta.getIsolationLevel());
 		assertEquals(10, ta.getTimeout());
 		assertFalse(ta.isReadOnly());
-		assertTrue(ta.rollbackOn(new RuntimeException()));
-		assertFalse(ta.rollbackOn(new Exception()));
+		assertTrue(ta.rollbackOn(null, new RuntimeException()));
+		assertFalse(ta.rollbackOn(null, new Exception()));
 		// Check for our bizarre customized rollback rules
-		assertTrue(ta.rollbackOn(new IOException()));
-		assertTrue(!ta.rollbackOn(new MyRuntimeException("")));
+		assertTrue(ta.rollbackOn(null, new IOException()));
+		assertTrue(!ta.rollbackOn(null, new MyRuntimeException("")));
 	}
 
 	@Test
@@ -113,11 +113,11 @@ public class TransactionAttributeEditorTests {
 		assertEquals(TransactionDefinition.ISOLATION_READ_COMMITTED, ta.getIsolationLevel());
 		assertEquals(TransactionDefinition.TIMEOUT_DEFAULT, ta.getTimeout());
 		assertTrue(ta.isReadOnly());
-		assertTrue(ta.rollbackOn(new RuntimeException()));
-		assertFalse(ta.rollbackOn(new Exception()));
+		assertTrue(ta.rollbackOn(null, new RuntimeException()));
+		assertFalse(ta.rollbackOn(null, new Exception()));
 		// Check for our bizarre customized rollback rules
-		assertFalse(ta.rollbackOn(new IOException()));
-		assertTrue(ta.rollbackOn(new MyRuntimeException("")));
+		assertFalse(ta.rollbackOn(null, new IOException()));
+		assertTrue(ta.rollbackOn(null, new MyRuntimeException("")));
 	}
 
 	@Test
@@ -136,8 +136,8 @@ public class TransactionAttributeEditorTests {
 		assertEquals(TransactionDefinition.ISOLATION_REPEATABLE_READ, ta.getIsolationLevel());
 		assertEquals(10, ta.getTimeout());
 		assertTrue(ta.isReadOnly());
-		assertTrue(ta.rollbackOn(new RuntimeException()));
-		assertFalse(ta.rollbackOn(new Exception()));
+		assertTrue(ta.rollbackOn(null, new RuntimeException()));
+		assertFalse(ta.rollbackOn(null, new Exception()));
 
 		source.setTimeout(9);
 		assertNotSame(ta, source);
@@ -163,8 +163,8 @@ public class TransactionAttributeEditorTests {
 		assertEquals(TransactionDefinition.ISOLATION_REPEATABLE_READ, ta.getIsolationLevel());
 		assertEquals(10, ta.getTimeout());
 		assertTrue(ta.isReadOnly());
-		assertTrue(ta.rollbackOn(new IllegalArgumentException()));
-		assertFalse(ta.rollbackOn(new IllegalStateException()));
+		assertTrue(ta.rollbackOn(null, new IllegalArgumentException()));
+		assertFalse(ta.rollbackOn(null, new IllegalStateException()));
 
 		source.getRollbackRules().clear();
 		assertNotSame(ta, source);

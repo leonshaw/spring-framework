@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.transaction.CannotCreateTransactionException;
@@ -371,7 +372,7 @@ public abstract class AbstractTransactionAspectTests {
 
 		TransactionAttribute txatt = new DefaultTransactionAttribute() {
 			@Override
-			public boolean rollbackOn(Throwable t) {
+			public boolean rollbackOn(@Nullable TransactionStatus txs, Throwable t) {
 				assertTrue(t == ex);
 				return shouldRollback;
 			}

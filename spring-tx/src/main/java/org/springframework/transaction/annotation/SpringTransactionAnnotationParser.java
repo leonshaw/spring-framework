@@ -68,6 +68,7 @@ public class SpringTransactionAnnotationParser implements TransactionAnnotationP
 		rbta.setQualifier(attributes.getString("value"));
 
 		List<RollbackRuleAttribute> rollbackRules = new ArrayList<>();
+		List<RollbackRuleAttribute> propagateRollbackRules = new ArrayList<>();
 		for (Class<?> rbRule : attributes.getClassArray("rollbackFor")) {
 			rollbackRules.add(new RollbackRuleAttribute(rbRule));
 		}
@@ -80,7 +81,14 @@ public class SpringTransactionAnnotationParser implements TransactionAnnotationP
 		for (String rbRule : attributes.getStringArray("noRollbackForClassName")) {
 			rollbackRules.add(new NoRollbackRuleAttribute(rbRule));
 		}
+		for (Class<?> prbRule : attributes.getClassArray("noPropagateRollbackFor")) {
+			propagateRollbackRules.add(new NoRollbackRuleAttribute(prbRule));
+		}
+		for (String prbRule : attributes.getStringArray("noPropagateRollbackForClassName")) {
+			propagateRollbackRules.add(new NoRollbackRuleAttribute(prbRule));
+		}
 		rbta.setRollbackRules(rollbackRules);
+		rbta.setPropagateRollbackRules(propagateRollbackRules);
 
 		return rbta;
 	}

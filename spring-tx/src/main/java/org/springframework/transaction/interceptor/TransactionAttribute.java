@@ -18,6 +18,7 @@ package org.springframework.transaction.interceptor;
 
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 
 /**
  * This interface adds a {@code rollbackOn} specification to {@link TransactionDefinition}.
@@ -45,6 +46,6 @@ public interface TransactionAttribute extends TransactionDefinition {
 	 * @param ex the exception to evaluate
 	 * @return whether to perform a rollback or not
 	 */
-	boolean rollbackOn(Throwable ex);
+	boolean rollbackOn(@Nullable TransactionStatus txs, Throwable ex);
 
 }

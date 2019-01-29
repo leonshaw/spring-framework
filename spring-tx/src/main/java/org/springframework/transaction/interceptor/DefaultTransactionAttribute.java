@@ -17,6 +17,7 @@
 package org.springframework.transaction.interceptor;
 
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
@@ -131,7 +132,7 @@ public class DefaultTransactionAttribute extends DefaultTransactionDefinition im
 	 * @see org.springframework.transaction.support.TransactionTemplate#execute
 	 */
 	@Override
-	public boolean rollbackOn(Throwable ex) {
+	public boolean rollbackOn(@Nullable TransactionStatus txs, Throwable ex) {
 		return (ex instanceof RuntimeException || ex instanceof Error);
 	}
 
